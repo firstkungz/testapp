@@ -1,0 +1,193 @@
+<% content_for :body do %>
+
+<style>
+	.achieve{
+		display: inline-block;
+		width: 170px;
+		height: 100%;
+		border-radius: 5px;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+		-webkit-box-shadow: 0 1px 2px 0 #a39d92,0 0 0 rgba(0,0,0,0);
+		-moz-box-shadow: 0 1px 2px 0 #a39d92,0 0 0 rgba(0,0,0,0);
+		box-shadow: 0 1px 2px 0 #a39d92,0 0 0 rgba(0,0,0,0);
+		border: 1px solid #f3f3e9;
+	}
+	.infotab{
+		background-color:white;
+		float:left;
+	}
+
+	legend{
+		font-size: 18px;
+		margin-top: 10px;
+		margin-bottom: 10px;
+		color:black;
+		border-bottom: none;
+		padding-top: 10px;
+	}
+	.tab-content {
+		width:700px;
+		margin:auto;
+	}
+	.tab-content > div{
+		height:100%;
+		width:700px;
+	}
+	.nav-tabs{
+		width:700px;
+		margin:auto;
+	}
+	.nav-tabs > li.active a{
+		background: #fff;
+		color: #836F6F;
+		width: 120px;
+		height: 87px;
+		background:none;
+		background-image: url(/assets/nav-tab-active.png);
+		border:none;
+	}
+	.nav-tabs > li.active a:hover{
+		background: #fff;
+		width: 120px;
+		height: 87px;
+		background:none;
+		background-image: url(/assets/nav-tab-active.png);
+		border:none;
+	}
+	.nav-tabs > li a{
+		/*color: #fff;*/
+		width: 120px;
+		height: 87px;
+
+		background:none;
+		background-image: url(/assets/normal-tab.png);
+		border:none;
+	}
+	.nav-tabs > li a:hover{
+		/*color: #fff;*/
+		width: 120px;
+		height: 87px;
+		background:none;
+		background-image: url(/assets/nav-tab.png);
+		border:none;
+	}
+
+</style>
+<script>
+	$(function(){
+		$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+			var id = $(e.target).attr("href").substr(1);
+			localStorage.setItem('selectedTab', id);
+			console.log(id)
+		});
+
+		var selectedTab = localStorage.getItem('selectedTab');
+    	$('#myTab a[href="#' + selectedTab + '"]').tab('show');
+		console.log(selectedTab)
+	})
+</script>
+
+
+<!-- Nav tabs -->
+<ul class="nav nav-tabs" id="myTab">
+  <li class="active" ><a href="#profile" data-toggle="tab"  ><br><center>Profile</center></a></li>
+  <li><a href="#achievement" data-toggle="tab"><br><center>Achievement</center></a></li>
+  <li><a href="#settings" data-toggle="tab"><br><center>Settings</center></a></li>
+</ul>
+
+<!-- Tab panes -->
+<div class="tab-content" >
+	<div class="tab-pane infotab active" id="profile">
+		<div align=center style="color:green">
+			<%u = Auth.user %>
+	  		<% result=User.where(uid: u.id).take %>
+	  		<legend>Account</legend>
+	  		<div style="width:300px;height:1px;background:gray"></div>
+	  		<br>
+	  		username:
+	   	<%if (result[:email].nil?)==false %>
+				<%=result[:email] %>
+	  		<%else%>
+		  		<%="Error query email" %>
+			<%end%>
+			<br><br>
+			<%servercount= Server.where(user_id: u.id).count %><br>
+	   	<legend>Server(s) and Project(s)</legend>
+	   	<div style="width:300px;height:1px;background:gray"></div>
+	   	<br>
+  			The number of server(s) : <%=servercount %>:<br>
+			<%s = u.obj.servers  %>
+			<%if (s[0].nil?)==false %>
+				<%for i in 0..(servercount-1) %>
+					<%=i+1%><%= " Server name:"%><%projectcount= Proj.where(server_id: s[i][:sid].inspect).count %>
+					<%=s[i][:name].inspect %><%= " contains "%><%=projectcount%><%= " project(s)."%><br>
+					<%if (s[i].projs[0].nil?)==false %>
+						<%for ii in 0..(projectcount-1) %>
+							<%="  -        "%><%= s[i].projs[ii][:name].inspect%><br>
+						<%end%>
+					<%else%>
+						<%="           No Project(s)"%>
+					<% end %>
+
+				<% end %>
+			<%else%>
+				<%="No server"%>
+			<% end %>
+		</div>
+		<br><br>
+	</div>
+
+	<div class="tab-pane infotab" id="settings">
+		<div  align=center>
+				<%= form_for :post do |f| %>
+		    		<legend>
+						<% flash.each do |name, msg| -%>
+				      	<%= content_tag :div, msg, class: name , style:"color:red;font-size:14px" %>
+			   	 	<% end %>		
+						<div>Change password</div>
+					</legend>
+					<div style="width:300px;height:1px;background:gray"></div>
+					<br>
+		    		<%= f.text_field :oldpassword,:class => "form-control fazilai-textform",:placeholder => "old password" %><br>
+			    	<%= f.password_field :newpassword ,:class => "form-control fazilai-textform",:placeholder => "new password"%><br>
+					<%= f.password_field :renewpassword ,:class => "form-control fazilai-textform",:placeholder => "re new password"%><br>
+					<%= f.submit :"Submit" , :class => "form-control fazilai-login btn-warning" , :style => "display:inline"%> 
+					<br><br>
+				<% end %>
+		</div>
+		<br><br>
+	</div>
+
+	<div class="tab-pane infotab" id="achievement">
+		<div align=center style="color:green">
+			<legend>Achievement(s)</legend>
+			<div style="width:300px;height:1px;background:gray"></div>
+			<br>
+			<% acount=Ownachievement.where(user_id: u.id).count %>
+			<%a = u.obj.ownachievements  %>
+			<%if (a[0].nil?)== false%>
+				<% for i in 0..(acount-1) %>
+					<div align='center'	class="achieve">
+						<div ><br>
+							<% ach =  a[i].achievement[:aid].inspect%>		
+							<%= image_tag "badge"+ach+".png" %>
+    					</div>
+    					<p>
+      					<span class="name"> 	<%=a[i].achievement[:name].inspect%><br> </span>
+        					<span class="created_at"> <%=a[i].achievement[:detail].inspect%> </span>
+    					</p>
+	  				</div>
+					<%if (i+1)%3==0%>
+					<br><br>
+					<% end %>
+				<%end%>
+			<%else%>
+				<%="No achievement(s)"%>
+			<%end%>
+		</div>
+		<br><br>
+	</div>
+
+
+<% end%>

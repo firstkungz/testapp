@@ -1,0 +1,3 @@
+syntax: glob
+tmp/cache/assets/development/sprockets/
+app/assets/images/glyphicons

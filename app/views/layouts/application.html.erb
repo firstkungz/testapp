@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Fazilai</title>
+  <%= stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true %>
+  <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
+  <%= csrf_meta_tags %>
+	<style>
+
+		.bg{
+		 	background-image: url(<%= asset_path 'bg.png' %>)
+		}
+
+		.logo{
+			height: 40px;
+			position: absolute;
+			margin-top: -10px;
+		}
+		
+	</style>
+	
+</head>
+<body class="bg" style="padding-top:70px">
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+	 <%= link_to image_tag("logo.png", :class => "logo"), index_path , :class => "navbar-brand" %>
+  </div>
+  <!-- Collect the nav links, forms, and other content for toggling -->
+	<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+		<%
+			auth = Auth.user
+			if auth.logged
+		%>
+
+		<ul class="nav navbar-nav navbar-right" style="padding-right: 10px">
+          <li> <%= link_to "Hello! "+auth.name , profile_path %></li>
+      	 <li class="dropdown">
+        		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Manu <b class="caret"></b></a>
+        		<ul class="dropdown-menu">
+          		<li> <%= link_to "Profile" , profile_path %></li>
+          		<li> <%= link_to "Log" , log_path %></li>
+          		<li><a href="#">Donate</a></li>
+          		<li class="divider"></li>
+					<li><%= link_to 'Logout', logout_path() %></li>
+        		</ul>
+      	</li>
+		</ul>
+		<%	end %>
+	</div>
+</nav>
+
+
+<%= yield :body %>
+
+</body>
+</html>

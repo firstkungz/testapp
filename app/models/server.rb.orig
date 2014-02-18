@@ -1,0 +1,8 @@
+class Server < ActiveRecord::Base
+	belongs_to :user
+<<<<<<< local
+	has_many :proj
+=======
+	has_many :projs
+>>>>>>> other
+end
